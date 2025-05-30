@@ -1,6 +1,11 @@
 .chatList {
   flex: 1;
-  overflow: scroll;
+  /* overflow: scroll; */
+  overflow-y: auto;
+
+  /* hide scrollbar for IE, Edge and Firefox */
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 
   .search {
     display: flex;
@@ -71,4 +76,9 @@
       }
     }
   }
+}
+
+/* hide scrollbar for chrome, safari and opera */
+.chatList::-webkit-scrollbar {
+  display: none;
 }
