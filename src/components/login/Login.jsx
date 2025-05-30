@@ -25,7 +25,10 @@ const Login = () => {
     //toast.warn("Test toaster using warning");
 
     // test the toast
-    toast.success("Test toaster using success");
+    //toast.success("Test toaster using success");
+
+    // test the toast
+    toast.error("Test toaster using error");
   };
 
   return (
