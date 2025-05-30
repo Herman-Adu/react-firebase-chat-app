@@ -6,7 +6,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
     border-bottom: 1px solid #dddddd35;
 
     img {
@@ -92,6 +92,15 @@
 
     &:hover {
       background-color: rgba(220, 20, 60, 0.796);
+    }
+
+    &.logout {
+      padding: 10px;
+      background-color: #1a73e8;
+
+      &:hover {
+        background-color: rgba(20, 113, 220, 0.796);
+      }
     }
   }
 }
