@@ -46,7 +46,74 @@ const Chat = () => {
       </div>
 
       {/*  Center Section Chats */}
-      <div className="center">Center section</div>
+      <div className="center">
+        <div className="message">
+          <img src="./avatar.png" alt="" />
+
+          <div className="texts">
+            <p>
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry&pos;s standard dummy
+              text ever since the 1500s,
+            </p>
+
+            <span>1 min ago</span>
+          </div>
+        </div>
+
+        <div className="message own">
+          <div className="texts">
+            <p>
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry&pos;s standard dummy
+              text ever since the 1500s,
+            </p>
+
+            <span>1 min ago</span>
+          </div>
+        </div>
+
+        <div className="message">
+          <img src="./avatar.png" alt="" />
+
+          <div className="texts">
+            <p>
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry&pos;s standard dummy
+              text ever since the 1500s,
+            </p>
+
+            <span>1 min ago</span>
+          </div>
+        </div>
+
+        <div className="message own">
+          <div className="texts">
+            <img src="./sunset.jpg" alt="" />
+            <p>
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry&pos;s standard dummy
+              text ever since the 1500s,
+            </p>
+
+            <span>1 min ago</span>
+          </div>
+        </div>
+
+        <div className="message">
+          <img src="./avatar.png" alt="" />
+
+          <div className="texts">
+            <p>
+              Lorem Ipsum is simply dummy text of the printing and typesetting
+              industry. Lorem Ipsum has been the industry&pos;s standard dummy
+              text ever since the 1500s,
+            </p>
+
+            <span>1 min ago</span>
+          </div>
+        </div>
+      </div>
 
       {/* Bottom Section */}
 
