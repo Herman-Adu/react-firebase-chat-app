@@ -2,7 +2,10 @@ import { useState } from "react";
 import "./login.css";
 
 import { toast } from "react-toastify";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+} from "firebase/auth";
 import { auth, db } from "../../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 import upload from "../../lib/upload";
@@ -28,7 +31,7 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    // get the data entered into the form
+    // get the register data entered into the form
     const formData = new FormData(e.target);
 
     // destructure username, email and password from formData
@@ -70,6 +73,24 @@ const Login = () => {
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setLoading(true);
+
+    // get the sign in data entered into the form
+    const formData = new FormData(e.target);
+
+    // destructure email and password from formData
+    const { email, password } = Object.fromEntries(formData);
+
+    // attempt sign in
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (err) {
+      console.log(err);
+
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -80,7 +101,8 @@ const Login = () => {
         <form onSubmit={handleLogin}>
           <input type="text" placeholder="Email" name="email" />
           <input type="password" placeholder="Password" name="password" />
-          <button>Sign in</button>
+
+          <button disabled={loading}>{loading ? "Loading" : "Sign In"}</button>
         </form>
       </div>
 
@@ -104,9 +126,7 @@ const Login = () => {
           />
 
           <input type="text" placeholder="Username" name="username" />
-
           <input type="text" placeholder="Email" name="email" />
-
           <input type="password" placeholder="Password" name="password" />
 
           <button disabled={loading}>{loading ? "Loading" : "Sign Up"}</button>
