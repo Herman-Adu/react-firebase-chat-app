@@ -1,6 +1,11 @@
 import { useState } from "react";
 import "./login.css";
+
 import { toast } from "react-toastify";
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth, db } from "../../lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
+import upload from "../../lib/upload";
 
 const Login = () => {
   const [avatar, setAvatar] = useState({
@@ -8,27 +13,63 @@ const Login = () => {
     url: "",
   });
 
+  const [loading, setLoading] = useState(false);
+
   const handleAvatar = (e) => {
-    // check we got an avatar to prevent re-runs
     if (e.target.files[0]) {
       setAvatar({
         file: e.target.files[0],
-        url: URL.createObjectURL(e.target.files[0]), // use objectURL to be able to show the image stright away
+        url: URL.createObjectURL(e.target.files[0]),
       });
+    }
+  };
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    // get the data entered into the form
+    const formData = new FormData(e.target);
+
+    // destructure username, email and password from formData
+    const { username, email, password } = Object.fromEntries(formData);
+    //console.log("Username: ", username);
+    //console.log("Avatar: ", avatar.file);
+
+    try {
+      // create a new user with email and password
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+
+      // upload
+      const imgUrl = await upload(avatar.file);
+
+      // setup database document
+      await setDoc(doc(db, "users", res.user.uid), {
+        username,
+        email,
+        avatar: imgUrl,
+        id: res.user.uid,
+        blocked: [],
+      });
+
+      // setup database doc for chats - empty
+      await setDoc(doc(db, "userchats", res.user.uid), {
+        chats: [],
+      });
+
+      // feedback for account created
+      toast.success("Account created! You can login now!");
+    } catch (err) {
+      console.log(err);
+
+      toast.error(err.message);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleLogin = async (e) => {
     e.preventDefault();
-
-    // test the toast
-    //toast.warn("Test toaster using warning");
-
-    // test the toast
-    //toast.success("Test toaster using success");
-
-    // test the toast
-    toast.error("Test toaster using error");
   };
 
   return (
@@ -39,7 +80,7 @@ const Login = () => {
         <form onSubmit={handleLogin}>
           <input type="text" placeholder="Email" name="email" />
           <input type="password" placeholder="Password" name="password" />
-          <button>Sign In</button>
+          <button>Sign in</button>
         </form>
       </div>
 
@@ -48,7 +89,7 @@ const Login = () => {
       <div className="item">
         <h2>Create an Account</h2>
 
-        <form>
+        <form onSubmit={handleRegister}>
           <label htmlFor="file">
             <img src={avatar.url || "./avatar.png"} alt="" />
             Upload an image
@@ -68,7 +109,7 @@ const Login = () => {
 
           <input type="password" placeholder="Password" name="password" />
 
-          <button>Sign Up</button>
+          <button disabled={loading}>{loading ? "Loading" : "Sign Up"}</button>
         </form>
       </div>
     </div>
