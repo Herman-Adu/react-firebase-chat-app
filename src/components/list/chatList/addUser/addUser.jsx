@@ -73,8 +73,6 @@ const AddUser = () => {
           updatedAt: Date.now(),
         }),
       });
-
-      //
     } catch (err) {
       console.log("Error: ", err);
     }
@@ -86,6 +84,7 @@ const AddUser = () => {
         <input type="text" placeholder="Username" name="username" />
         <button>Search</button>
       </form>
+
       {user && (
         <div className="user">
           <div className="detail">

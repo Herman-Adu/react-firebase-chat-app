@@ -31,22 +31,15 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    // get the register data entered into the form
     const formData = new FormData(e.target);
 
-    // destructure username, email and password from formData
     const { username, email, password } = Object.fromEntries(formData);
-    //console.log("Username: ", username);
-    //console.log("Avatar: ", avatar.file);
 
     try {
-      // create a new user with email and password
       const res = await createUserWithEmailAndPassword(auth, email, password);
 
-      // upload
       const imgUrl = await upload(avatar.file);
 
-      // setup database document
       await setDoc(doc(db, "users", res.user.uid), {
         username,
         email,
@@ -55,12 +48,10 @@ const Login = () => {
         blocked: [],
       });
 
-      // setup database doc for chats - empty
       await setDoc(doc(db, "userchats", res.user.uid), {
         chats: [],
       });
 
-      // feedback for account created
       toast.success("Account created! You can login now!");
     } catch (err) {
       console.log(err);
@@ -75,13 +66,10 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
 
-    // get the sign in data entered into the form
     const formData = new FormData(e.target);
 
-    // destructure email and password from formData
     const { email, password } = Object.fromEntries(formData);
 
-    // attempt sign in
     try {
       await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
@@ -117,7 +105,6 @@ const Login = () => {
             Upload an image
           </label>
 
-          {/* hide the choose file button as the image is the trigger by htmlFor to bind the correct input to upload a file */}
           <input
             type="file"
             id="file"

@@ -13,9 +13,7 @@ const ChatList = () => {
 
   const { currentUser } = useUserStore();
 
-  const { chatId, changeChat } = useChatStore();
-
-  console.log("ChatId: ", chatId);
+  const { changeChat } = useChatStore();
 
   useEffect(() => {
     const unsub = onSnapshot(
@@ -48,6 +46,7 @@ const ChatList = () => {
 
   const handleSelect = async (chat) => {
     const userChats = chats.map((item) => {
+      // eslint-disable-next-line no-unused-vars
       const { user, ...rest } = item;
       return rest;
     });

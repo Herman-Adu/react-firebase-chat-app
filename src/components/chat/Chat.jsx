@@ -43,7 +43,7 @@ const Chat = () => {
     };
   }, [chatId]);
 
-  console.log("Chat: ", chat);
+  //console.log("Chat: ", chat);
 
   const handleEmoji = (e) => {
     setText((prev) => prev + e.emoji);

@@ -5,8 +5,13 @@ import { useUserStore } from "../../lib/userStore";
 import "./detail.css";
 
 const Detail = () => {
-  const { chatId, user, isCurrentUserBlocked, isReceiverBlocked, changeBlock } =
-    useChatStore();
+  const {
+    user,
+    isCurrentUserBlocked,
+    isReceiverBlocked,
+    changeBlock,
+    resetChat,
+  } = useChatStore();
   const { currentUser } = useUserStore();
 
   const handleBlock = async () => {
@@ -27,6 +32,7 @@ const Detail = () => {
 
   const handleLogout = () => {
     auth.signOut();
+    resetChat();
   };
 
   return (
