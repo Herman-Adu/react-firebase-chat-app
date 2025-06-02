@@ -13,6 +13,7 @@ import { db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
 import upload from "../../lib/upload";
+import { format } from "timeago.js";
 
 const Chat = () => {
   const [chat, setChat] = useState();
@@ -144,10 +145,10 @@ const Chat = () => {
             key={message?.createAt}
           >
             <div className="texts">
-              {message.img && <img src="./sunset.jpg" alt="" />}
+              {message.img && <img src={message.img} alt="" />}
               <p>{message.text}</p>
 
-              {/* <span>1 min ago</span> */}
+              {format(message.createdAt.toDate())}
             </div>
           </div>
         ))}
