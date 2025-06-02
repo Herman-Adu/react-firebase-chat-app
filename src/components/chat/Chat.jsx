@@ -1,33 +1,40 @@
 import { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
+import { doc, onSnapshot } from "firebase/firestore";
+import { db } from "../../lib/firebase";
 
 const Chat = () => {
-  // Emoji Module
+  const [chat, setChat] = useState();
   const [open, setOpen] = useState(false);
-
-  // update the input with text
   const [text, setText] = useState("");
-
   const endRef = useRef(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, []);
 
+  useEffect(() => {
+    const unSub = onSnapshot(
+      doc(db, "chats", "hv8KvMH1C07lqzxAKSXT"),
+      (res) => {
+        setChat(res.data());
+      }
+    );
+
+    return () => {
+      unSub();
+    };
+  }, []);
+
+  console.log("Chat: ", chat);
+
   const handleEmoji = (e) => {
     setText((prev) => prev + e.emoji);
     setOpen(false);
   };
 
-  /* const handleEmoji = (e) => {
-    //console.log("Emoji Events: ", e);
-
-    setText((prev) => prev + e.emoji);
-    setOpen(false);
-  }; */
-
-  // check values after handleEmoji is run
+  // check values - handleEmoji
   //console.log("Input Text: ", text);
 
   return (
