@@ -12,6 +12,7 @@ import {
 import { db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
+import upload from "../../lib/upload";
 
 const Chat = () => {
   const [chat, setChat] = useState();
@@ -19,7 +20,7 @@ const Chat = () => {
   const [text, setText] = useState("");
 
   const { currentUser } = useUserStore();
-  const { chatId } = useChatStore();
+  const { chatId, user } = useChatStore();
 
   const endRef = useRef(null);
 
@@ -44,8 +45,45 @@ const Chat = () => {
     setOpen(false);
   };
 
-  // check values - handleEmoji
-  //console.log("Input Text: ", text);
+  const handleSend = async () => {
+    if (text === "") return;
+
+    try {
+      await updateDoc(doc(db, "chats", chatId), {
+        messages: arrayUnion({
+          senderId: currentUser.id,
+          text,
+          createdAt: new Date(),
+        }),
+      });
+
+      const userIDs = [currentUser.id, user.id];
+
+      userIDs.forEach(async (id) => {
+        const userChatsRef = doc(db, "userchats", id);
+        const userChatsSnapshot = await getDoc(userChatsRef);
+
+        if (userChatsSnapshot.exists()) {
+          const userChatsData = userChatsSnapshot.data();
+
+          const chatIndex = userChatsData.chats.findIndex(
+            (c) => c.chatId === chatId
+          );
+
+          userChatsData.chats[chatIndex].lastMessage = text;
+          userChatsData.chats[chatIndex].isSeen =
+            id === currentUser.id ? true : false;
+          userChatsData.chats[chatIndex].updatedAt = Date.now();
+
+          await updateDoc(userChatsRef, {
+            chats: userChatsData.chats,
+          });
+        }
+      });
+    } catch (err) {
+      console.log("Error: ", err);
+    }
+  };
 
   return (
     <div className="chat">
@@ -70,72 +108,16 @@ const Chat = () => {
 
       {/*  Center Section Chats */}
       <div className="center">
-        <div className="message">
-          <img src="./avatar.png" alt="" />
+        {chat?.messages?.map((message) => (
+          <div className="message own" key={message?.createAt}>
+            <div className="texts">
+              {message.img && <img src="./sunset.jpg" alt="" />}
+              <p>{message.text}</p>
 
-          <div className="texts">
-            <p>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry&pos;s standard dummy
-              text ever since the 1500s,
-            </p>
-
-            <span>1 min ago</span>
+              {/* <span>1 min ago</span> */}
+            </div>
           </div>
-        </div>
-
-        <div className="message own">
-          <div className="texts">
-            <p>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry&pos;s standard dummy
-              text ever since the 1500s,
-            </p>
-
-            <span>1 min ago</span>
-          </div>
-        </div>
-
-        <div className="message">
-          <img src="./avatar.png" alt="" />
-
-          <div className="texts">
-            <p>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry&pos;s standard dummy
-              text ever since the 1500s,
-            </p>
-
-            <span>1 min ago</span>
-          </div>
-        </div>
-
-        <div className="message own">
-          <div className="texts">
-            <img src="./sunset.jpg" alt="" />
-            <p>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry&pos;s standard dummy
-              text ever since the 1500s,
-            </p>
-
-            <span>1 min ago</span>
-          </div>
-        </div>
-
-        <div className="message">
-          <img src="./avatar.png" alt="" />
-
-          <div className="texts">
-            <p>
-              Lorem Ipsum is simply dummy text of the printing and typesetting
-              industry. Lorem Ipsum has been the industry&pos;s standard dummy
-              text ever since the 1500s,
-            </p>
-
-            <span>1 min ago</span>
-          </div>
-        </div>
+        ))}
 
         <div ref={endRef}></div>
       </div>
@@ -167,7 +149,9 @@ const Chat = () => {
           </div>
         </div>
 
-        <button className="sendButton">Send</button>
+        <button className="sendButton" onClick={handleSend}>
+          Send
+        </button>
       </div>
     </div>
   );
