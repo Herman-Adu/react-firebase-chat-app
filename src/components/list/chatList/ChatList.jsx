@@ -1,9 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./chatList.css";
 import AddUser from "./addUser/addUser";
+import { useUserStore } from "../../../lib/userStore";
+import { doc, getDoc, onSnapshot } from "firebase/firestore";
+import { db } from "../../../lib/firebase";
 
 const ChatList = () => {
+  const [chats, setChats] = useState([]);
   const [addMode, setAddMode] = useState(false);
+
+  const { currentUser } = useUserStore();
+
+  useEffect(() => {
+    const unsub = onSnapshot(
+      doc(db, "userchats", currentUser.id),
+      async (res) => {
+        const items = res.data().chats;
+
+        const promises = items.map(async (item) => {
+          const userDocRef = doc(db, "users", item.receiverId);
+          const userDocSnap = await getDoc(userDocRef);
+
+          const user = userDocSnap.data();
+
+          return { ...item, user };
+        });
+
+        const chatData = await Promise.all(promises);
+
+        setChats(chatData.sort((a, b) => b.updatedAt - a.updatedAt));
+      }
+    );
+
+    return () => {
+      unsub();
+    };
+  }, [currentUser.id]);
+
+  console.log("Chats: ", chats);
 
   return (
     <div className="chatList">
@@ -20,24 +54,16 @@ const ChatList = () => {
           onClick={() => setAddMode((prev) => !prev)}
         />
       </div>
+      {chats.map((chat) => (
+        <div className="item" key={chat.chatId}>
+          <img src="./avatar.png" alt="" />
 
-      <div className="item">
-        <img src="./avatar.png" alt="" />
-
-        <div className="texts">
-          <span>john Doe</span>
-          <p>Hello</p>
+          <div className="texts">
+            <span>john Doe</span>
+            <p>{chat.lastMessage}</p>
+          </div>
         </div>
-      </div>
-
-      <div className="item">
-        <img src="./avatar.png" alt="" />
-
-        <div className="texts">
-          <span>john Doe</span>
-          <p>Hello</p>
-        </div>
-      </div>
+      ))}
 
       {addMode && <AddUser />}
     </div>
